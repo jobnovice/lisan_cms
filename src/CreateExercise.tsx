@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Play, Pause, Volume2 } from "lucide-react";
+import { EdgeTTS } from "edge-tts-universal";
 
 interface Option {
     id: number;
@@ -28,6 +29,13 @@ export default function CreateExercise() {
     const [options, setOptions] = useState<Option[]>([{ id: 0, text: "" }]);
     const [correctOptionId, setCorrectOptionId] = useState(0);
     const [hints, setHints] = useState("");
+
+    // New states for audio generation
+    const [audioText, setAudioText] = useState("");
+    const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+    const [generatedAudioUrl, setGeneratedAudioUrl] = useState("");
+    const [audioPlayerUrl, setAudioPlayerUrl] = useState("");
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const exerciseTypes = [
         { value: "translation", label: "Translation" },
@@ -104,6 +112,62 @@ export default function CreateExercise() {
         }
     };
 
+    // Function to convert text to audio
+    const convertTextToAudio = async () => {
+        if (!audioText.trim()) {
+            alert("Please enter text to convert to audio");
+            return;
+        }
+
+        setIsGeneratingAudio(true);
+
+        try {
+            const tts = new EdgeTTS(audioText, "am-ET-MekdesNeural");
+            const result = await tts.synthesize();
+
+            // Convert to blob and trigger download
+            const audioArrayBuffer = await result.audio.arrayBuffer();
+            const audioBlob = new Blob([audioArrayBuffer], {
+                type: "audio/mpeg",
+            });
+
+            const timestamp = new Date().getTime();
+            const fileName = `audio_${timestamp}.mp3`;
+
+            // Create download link
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const a = document.createElement("a");
+            a.href = audioUrl;
+            a.download = fileName;
+            a.click();
+
+            // Set the blob URL for audio player
+            setGeneratedAudioUrl(audioUrl);
+            setAudioPlayerUrl(audioUrl);
+            setPromptAudio(audioUrl); // Update the promptAudio state
+        } catch (error) {
+            console.error("Error generating audio:", error);
+            alert("Failed to generate audio. Please try again.");
+        } finally {
+            setIsGeneratingAudio(false);
+        }
+    };
+
+    // Function to handle audio playback
+    const togglePlayback = () => {
+        const audioElement = document.getElementById(
+            "audio-player"
+        ) as HTMLAudioElement;
+        if (audioElement) {
+            if (isPlaying) {
+                audioElement.pause();
+            } else {
+                audioElement.play();
+            }
+            setIsPlaying(!isPlaying);
+        }
+    };
+
     const generateExerciseJSON = () => {
         const baseExercise: ExerciseData = {
             id: `${exerciseType.substring(0, 2)}_${Date.now()
@@ -113,11 +177,9 @@ export default function CreateExercise() {
             instruction: instruction || "Complete this exercise",
             data: {},
         };
-
         if (subtype) {
             baseExercise.subtype = subtype;
         }
-
         switch (exerciseType) {
             case "translation":
                 baseExercise.data = {
@@ -131,7 +193,6 @@ export default function CreateExercise() {
                     );
                 }
                 break;
-
             case "complete_sentence":
                 baseExercise.data = {
                     reference_text: referenceText,
@@ -144,7 +205,6 @@ export default function CreateExercise() {
                     );
                 }
                 break;
-
             case "fill_in_blank":
                 baseExercise.data = {
                     display_text: displayText,
@@ -157,7 +217,6 @@ export default function CreateExercise() {
                     correct_option_id: correctOptionId,
                 };
                 break;
-
             case "speaking":
                 baseExercise.data = {
                     prompt_text: promptText,
@@ -165,12 +224,10 @@ export default function CreateExercise() {
                     correct_answer: correctAnswer,
                 };
                 break;
-
             case "listening":
                 baseExercise.data = {
                     prompt_audio_url: promptAudio,
                 };
-
                 if (subtype === "choose_missing") {
                     baseExercise.data.display_text = displayText;
                     baseExercise.data.options = options
@@ -196,7 +253,6 @@ export default function CreateExercise() {
                 }
                 break;
         }
-
         return JSON.stringify(baseExercise, null, 4);
     };
 
@@ -207,8 +263,7 @@ export default function CreateExercise() {
     };
 
     return (
-        <div
-            className="font-body bg-gray-50 min-h-screen">
+        <div className="font-body bg-gray-50 min-h-screen">
             {/* Main Content */}
             <main className="flex-1 px-10 py-12">
                 <div className="max-w-4xl mx-auto">
@@ -221,7 +276,6 @@ export default function CreateExercise() {
                             to the Amharic learning app.
                         </p>
                     </div>
-
                     <div className="bg-white rounded-lg shadow-sm p-8 space-y-6">
                         {/* Exercise Type Selection */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -248,7 +302,6 @@ export default function CreateExercise() {
                                     ))}
                                 </select>
                             </label>
-
                             {exerciseType &&
                                 getSubtypes(exerciseType).length > 0 && (
                                     <label className="flex flex-col">
@@ -279,7 +332,6 @@ export default function CreateExercise() {
                                     </label>
                                 )}
                         </div>
-
                         {/* Instruction */}
                         <div>
                             <label className="flex flex-col">
@@ -297,14 +349,12 @@ export default function CreateExercise() {
                                 />
                             </label>
                         </div>
-
                         {/* Dynamic Fields Based on Exercise Type */}
                         {exerciseType && (
                             <div className="space-y-6 pt-6">
                                 <h3 className="text-lg font-semibold text-gray-800">
                                     Exercise Content
                                 </h3>
-
                                 {/* Translation Fields */}
                                 {exerciseType === "translation" && (
                                     <>
@@ -344,7 +394,6 @@ export default function CreateExercise() {
                                         </div>
                                     </>
                                 )}
-
                                 {/* Complete Sentence Fields */}
                                 {exerciseType === "complete_sentence" && (
                                     <>
@@ -404,7 +453,6 @@ export default function CreateExercise() {
                                         </div>
                                     </>
                                 )}
-
                                 {/* Fill in the Blank Fields */}
                                 {exerciseType === "fill_in_blank" && (
                                     <>
@@ -492,7 +540,6 @@ export default function CreateExercise() {
                                         </div>
                                     </>
                                 )}
-
                                 {/* Speaking Fields */}
                                 {exerciseType === "speaking" && (
                                     <>
@@ -534,7 +581,6 @@ export default function CreateExercise() {
                                         </div>
                                     </>
                                 )}
-
                                 {/* Listening Fields */}
                                 {exerciseType === "listening" && subtype && (
                                     <>
@@ -560,7 +606,6 @@ export default function CreateExercise() {
                                                 </label>
                                             </div>
                                         )}
-
                                         {subtype === "choose_missing" && (
                                             <div>
                                                 <div className="flex justify-between items-center mb-3">
@@ -650,7 +695,6 @@ export default function CreateExercise() {
                                                 )}
                                             </div>
                                         )}
-
                                         {(subtype === "type_missing" ||
                                             subtype === "free_text" ||
                                             subtype === "block_build") && (
@@ -675,7 +719,6 @@ export default function CreateExercise() {
                                         )}
                                     </>
                                 )}
-
                                 {/* Blocks Section */}
                                 {((exerciseType === "translation" &&
                                     subtype === "block_build") ||
@@ -735,12 +778,71 @@ export default function CreateExercise() {
                                         </div>
                                     </div>
                                 )}
+                                {/* Audio Generation Section */}
+                                <div>
+                                    <p className="text-gray-700 text-sm font-medium leading-normal pb-2">
+                                        Generate Audio from Text
+                                    </p>
+                                    <div className="flex flex-col space-y-3">
+                                        <textarea
+                                            className="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-md text-gray-800 focus:outline-0 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 border border-gray-300 bg-white min-h-20 placeholder:text-gray-400 p-3 text-sm font-normal leading-normal"
+                                            placeholder="Enter Amharic text to convert to audio..."
+                                            value={audioText}
+                                            onChange={(e) =>
+                                                setAudioText(e.target.value)
+                                            }
+                                        />
+                                        <div className="flex items-center space-x-3">
+                                            <button
+                                                type="button"
+                                                onClick={convertTextToAudio}
+                                                disabled={
+                                                    isGeneratingAudio ||
+                                                    !audioText.trim()
+                                                }
+                                                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                                            >
+                                                <Volume2 className="w-4 h-4" />
+                                                {isGeneratingAudio
+                                                    ? "Generating..."
+                                                    : "Convert to Audio"}
+                                            </button>
 
-                                {/* Audio Section */}
+                                            {/* Audio Player */}
+                                            {audioPlayerUrl && (
+                                                <div className="flex items-center space-x-2 bg-gray-100 rounded-md px-3 py-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={togglePlayback}
+                                                        className="p-1 rounded-full bg-blue-500 text-white hover:bg-blue-600"
+                                                    >
+                                                        {isPlaying ? (
+                                                            <Pause className="w-4 h-4" />
+                                                        ) : (
+                                                            <Play className="w-4 h-4" />
+                                                        )}
+                                                    </button>
+                                                    <span className="text-sm text-gray-600">
+                                                        Play generated audio
+                                                    </span>
+                                                    <audio
+                                                        id="audio-player"
+                                                        src={audioPlayerUrl}
+                                                        onEnded={() =>
+                                                            setIsPlaying(false)
+                                                        }
+                                                        className="hidden"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* Manual Audio URL Input (Fallback) */}
                                 <div>
                                     <label className="flex flex-col">
                                         <p className="text-gray-700 text-sm font-medium leading-normal pb-2">
-                                            Prompt Audio URL{" "}
+                                            Or Enter Audio URL Manually{" "}
                                             <span className="text-gray-400">
                                                 (Optional)
                                             </span>
@@ -756,7 +858,6 @@ export default function CreateExercise() {
                                         />
                                     </label>
                                 </div>
-
                                 {/* Hints */}
                                 <div>
                                     <label className="flex flex-col">
@@ -778,7 +879,6 @@ export default function CreateExercise() {
                                 </div>
                             </div>
                         )}
-
                         {/* Preview JSON */}
                         {exerciseType && (
                             <div className="pt-6">
@@ -790,7 +890,6 @@ export default function CreateExercise() {
                                 </pre>
                             </div>
                         )}
-
                         {/* Action Buttons */}
                         <div className="flex justify-end pt-6 gap-3">
                             <button
