@@ -7,7 +7,6 @@ import {
     Edit,
     BarChart3,
     FolderOpen,
-    Users,
     Settings,
     HelpCircle,
 } from "lucide-react";
@@ -108,7 +107,7 @@ const FormField: React.FC<{
             type={type}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            className="w-full rounded-md border-1 border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500 transition-colors"
         />
     </div>
 );
@@ -322,7 +321,7 @@ const LessonManagement: React.FC = () => {
 
                                 {/* Exercises Table */}
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-sm text-left text-gray-600">
+                                    <table className="w-full text-sm text-left text-gray-200">
                                         <thead className="text-xs text-gray-600 uppercase bg-gray-50">
                                             <tr>
                                                 <th
