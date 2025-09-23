@@ -1,26 +1,11 @@
 import React from "react";
-import {
-    Bell,
-    Plus,
-    PlusCircle,
-    BarChart3,
-    FolderOpen,
-    Settings,
-    HelpCircle,
-} from "lucide-react";
+import { Bell, Plus } from "lucide-react";  //, PlusCircle, BookOpen: in case we need some sort of 
+import { useNavigate } from "react-router-dom";
 
-// TypeScript interfaces
 interface StatCardProps {
     title: string;
     value: number;
     bgColor?: string;
-}
-
-interface NavItemProps {
-    icon: React.ReactNode;
-    label: string;
-    isActive?: boolean;
-    onClick?: () => void;
 }
 
 interface ContentStats {
@@ -35,7 +20,6 @@ interface ContentStatus {
     published: number;
 }
 
-// Components
 const StatCard: React.FC<StatCardProps> = ({
     title,
     value,
@@ -47,25 +31,6 @@ const StatCard: React.FC<StatCardProps> = ({
         <p className="text-sm font-medium text-gray-600">{title}</p>
         <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
     </div>
-);
-
-const NavItem: React.FC<NavItemProps> = ({
-    icon,
-    label,
-    isActive = false,
-    onClick,
-}) => (
-    <button
-        onClick={onClick}
-        className={`flex items-center gap-3 px-3 py-2 rounded-md w-full text-left transition-colors ${
-            isActive
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-700 hover:bg-gray-100"
-        }`}
-    >
-        {icon}
-        <span className="text-sm font-medium">{label}</span>
-    </button>
 );
 
 const ActionButton: React.FC<{
@@ -90,9 +55,9 @@ const ActionButton: React.FC<{
     );
 };
 
-// Main Dashboard Component
 const Dashboard: React.FC = () => {
-    // Mock data - in a real app, this would come from props or API calls
+    const navigate = useNavigate();
+
     const contentStats: ContentStats = {
         units: 12,
         lessons: 48,
@@ -105,18 +70,17 @@ const Dashboard: React.FC = () => {
         published: 10,
     };
 
-    // Event handlers
-    const handleNavClick = (section: string) => {
-        console.log(`Navigate to ${section}`);
-    };
-
     const handleCreateUnit = () => {
-        console.log("Create new unit");
+        navigate('/units');
     };
 
-    const handleCreateLesson = () => {
-        console.log("Create new lesson");
-    };
+    // const handleCreateLesson = () => {
+    //     navigate('/units');
+    // };
+
+    // const handleManageLessons = () => {
+    //     navigate('/lessons');
+    // };
 
     const handleNotificationClick = () => {
         console.log("Open notifications");
@@ -125,45 +89,8 @@ const Dashboard: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <div className="flex h-screen">
-                {/* Sidebar */}
-                <aside className="flex flex-col w-64 bg-white border-r border-gray-200">
-                    {/* Logo/Brand */}
-                    <div className="flex items-center justify-center h-16 border-b border-gray-200">
-                        <h1 className="text-gray-900 text-lg font-bold">
-                            Lisan CMS
-                        </h1>
-                    </div>
-
-                    {/* Navigation */}
-                    <nav className="flex-1 p-4 space-y-2">
-                        <NavItem
-                            icon={<BarChart3 size={20} />}
-                            label="Dashboard"
-                            isActive={true}
-                            onClick={() => handleNavClick("dashboard")}
-                        />
-                        <NavItem
-                            icon={<FolderOpen size={20} />}
-                            label="Content"
-                            onClick={() => handleNavClick("content")}
-                        />
-                        <NavItem
-                            icon={<Settings size={20} />}
-                            label="Settings"
-                            onClick={() => handleNavClick("settings")}
-                        />
-                        <NavItem
-                            icon={<HelpCircle size={20} />}
-                            label="Help"
-                            onClick={() => handleNavClick("help")}
-                        />
-                    </nav>
-                </aside>
-
-                {/* Main Content */}
                 <main className="flex-1 bg-gray-50 overflow-auto">
                     <div className="p-8">
-                        {/* Header */}
                         <header className="flex items-center justify-between pb-6 border-b border-gray-200 mb-6">
                             <div>
                                 <h1 className="text-3xl font-bold text-gray-900">
@@ -189,7 +116,6 @@ const Dashboard: React.FC = () => {
                             </div>
                         </header>
 
-                        {/* Content Overview Section */}
                         <section className="mb-8">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">
                                 Content Overview
@@ -210,7 +136,6 @@ const Dashboard: React.FC = () => {
                             </div>
                         </section>
 
-                        {/* Content Status Section */}
                         <section className="mb-8">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">
                                 Content Status
@@ -227,7 +152,6 @@ const Dashboard: React.FC = () => {
                             </div>
                         </section>
 
-                        {/* Quick Actions Section */}
                         <section className="mb-8">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">
                                 Quick Actions
@@ -237,17 +161,23 @@ const Dashboard: React.FC = () => {
                                     <Plus size={16} />
                                     <span>Create Unit</span>
                                 </ActionButton>
-                                <ActionButton
+                                {/* <ActionButton
                                     variant="secondary"
                                     onClick={handleCreateLesson}
                                 >
                                     <PlusCircle size={16} />
                                     <span>Create Lesson</span>
                                 </ActionButton>
+                                <ActionButton
+                                    variant="secondary"
+                                    onClick={handleManageLessons}
+                                >
+                                    <BookOpen size={16} />
+                                    <span>Manage Lessons</span>
+                                </ActionButton> */}
                             </div>
                         </section>
 
-                        {/* Recent Activity Section */}
                         <section>
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">
                                 Recent Activity
