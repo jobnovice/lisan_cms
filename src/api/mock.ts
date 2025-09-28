@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// Correct import syntax for TypeScript strict mode
+
 import type { ApiClient, ApiResponse, Unit, SubUnit, Lesson, Exercise } from './types';
 
-// Sample data
+// Sample data with theme field
 const mockUnits: Unit[] = [
   {
     id: 'unit-1',
@@ -10,16 +10,70 @@ const mockUnits: Unit[] = [
     order: 1,
     description: 'Introduction to Amharic language',
     isPublished: true,
+	subUnits: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }
 ];
 
-const mockSubUnits: SubUnit[] = [];
-const mockLessons: Lesson[] = [];
-const mockExercises: Exercise[] = [];
+const mockSubUnits: SubUnit[] = [
+//   {
+//     id: 'subunit-1',
+//     unitId: 'unit-1',
+//     title: 'Greetings and Introductions',
+//     theme: 'Greetings',
+//     order: 1,
+//     estimatedTotalTime: 120,
+//     createdAt: new Date().toISOString(),
+//     updatedAt: new Date().toISOString(),
+//   },
+//   {
+//     id: 'subunit-2', 
+//     unitId: 'unit-1',
+//     title: 'Formal Conversations',
+//     theme: 'Conversations',
+//     order: 2,
+//     estimatedTotalTime: 90,
+//     createdAt: new Date().toISOString(),
+//     updatedAt: new Date().toISOString(),
+//   }
+];
 
-// Helper function to simulate network delay
+const mockLessons: Lesson[] = [
+  {
+    id: 'lesson-1',
+    unitId: 'unit-1',
+    subUnitId: 'subunit-1',
+    title: 'Basic Greetings',
+    order: 1,
+    estimatedTime: 30,
+    objectives: ['Learn basic greetings', 'Practice pronunciation'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+];
+
+const mockExercises: Exercise[] = [
+  {
+    id: 'exercise-1',
+    unitId: 'unit-1',
+    subUnitId: 'subunit-1', 
+    lessonId: 'lesson-1',
+    title: 'Hello and Goodbye',
+    order: 1,
+    type: 'vocabulary',
+    instruction: 'Translate the English greetings to Amharic',
+    content: {
+      prompt: 'Hello',
+      correctAnswer: 'ሰላም'
+    },
+    hints: 'Remember the formal greeting',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+];
+
+// simple simulattion of network delay(not needed but,)
 const simulateDelay = (): Promise<void> => 
   new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 700));
 
@@ -113,20 +167,36 @@ export class MockApiClient implements ApiClient {
     return { success: true, data: newSubUnit };
   }
 
-  // ===== PLACEHOLDER METHODS =====
-  // For now, let's create simple placeholder implementations for the rest
-  // We can flesh these out as needed
-  
   async updateSubUnit(id: string, subUnitData: Partial<SubUnit>): Promise<ApiResponse<SubUnit>> {
     await simulateDelay();
-    return { success: false, error: 'Not implemented yet' };
+    
+    const index = mockSubUnits.findIndex(s => s.id === id);
+    if (index === -1) {
+      return { success: false, error: 'SubUnit not found' };
+    }
+    
+    mockSubUnits[index] = {
+      ...mockSubUnits[index],
+      ...subUnitData,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    return { success: true, data: { ...mockSubUnits[index] } };
   }
 
   async deleteSubUnit(id: string): Promise<ApiResponse<void>> {
     await simulateDelay();
-    return { success: false, error: 'Not implemented yet' };
+    
+    const index = mockSubUnits.findIndex(s => s.id === id);
+    if (index === -1) {
+      return { success: false, error: 'SubUnit not found' };
+    }
+    
+    mockSubUnits.splice(index, 1);
+    return { success: true };
   }
 
+  // ===== LESSON OPERATIONS =====
   async getLessons(subUnitId: string): Promise<ApiResponse<Lesson[]>> {
     await simulateDelay();
     const lessons = mockLessons.filter(l => l.subUnitId === subUnitId);
@@ -158,14 +228,34 @@ export class MockApiClient implements ApiClient {
 
   async updateLesson(id: string, lessonData: Partial<Lesson>): Promise<ApiResponse<Lesson>> {
     await simulateDelay();
-    return { success: false, error: 'Not implemented yet' };
+    
+    const index = mockLessons.findIndex(l => l.id === id);
+    if (index === -1) {
+      return { success: false, error: 'Lesson not found' };
+    }
+    
+    mockLessons[index] = {
+      ...mockLessons[index],
+      ...lessonData,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    return { success: true, data: { ...mockLessons[index] } };
   }
 
   async deleteLesson(id: string): Promise<ApiResponse<void>> {
     await simulateDelay();
-    return { success: false, error: 'Not implemented yet' };
+    
+    const index = mockLessons.findIndex(l => l.id === id);
+    if (index === -1) {
+      return { success: false, error: 'Lesson not found' };
+    }
+    
+    mockLessons.splice(index, 1);
+    return { success: true };
   }
 
+  // ===== EXERCISE OPERATIONS =====
   async getExercises(lessonId: string): Promise<ApiResponse<Exercise[]>> {
     await simulateDelay();
     const exercises = mockExercises.filter(e => e.lessonId === lessonId);
@@ -197,16 +287,59 @@ export class MockApiClient implements ApiClient {
 
   async updateExercise(id: string, exerciseData: Partial<Exercise>): Promise<ApiResponse<Exercise>> {
     await simulateDelay();
-    return { success: false, error: 'Not implemented yet' };
+    
+    const index = mockExercises.findIndex(e => e.id === id);
+    if (index === -1) {
+      return { success: false, error: 'Exercise not found' };
+    }
+    
+    mockExercises[index] = {
+      ...mockExercises[index],
+      ...exerciseData,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    return { success: true, data: { ...mockExercises[index] } };
   }
 
   async deleteExercise(id: string): Promise<ApiResponse<void>> {
     await simulateDelay();
-    return { success: false, error: 'Not implemented yet' };
+    
+    const index = mockExercises.findIndex(e => e.id === id);
+    if (index === -1) {
+      return { success: false, error: 'Exercise not found' };
+    }
+    
+    mockExercises.splice(index, 1);
+    return { success: true };
   }
 
   async reorderExercises(lessonId: string, exerciseIds: string[]): Promise<ApiResponse<void>> {
     await simulateDelay();
-    return { success: false, error: 'Not implemented yet' };
+    
+    // Validate that all exercise IDs belong to the lesson
+    const lessonExercises = mockExercises.filter(e => e.lessonId === lessonId);
+    const validExerciseIds = lessonExercises.map(e => e.id);
+    
+    const invalidIds = exerciseIds.filter(id => !validExerciseIds.includes(id));
+    if (invalidIds.length > 0) {
+      return { success: false, error: `Invalid exercise IDs: ${invalidIds.join(', ')}` };
+    }
+    
+    // Update the order of exercises
+    exerciseIds.forEach((exerciseId, index) => {
+      const exerciseIndex = mockExercises.findIndex(e => e.id === exerciseId);
+      if (exerciseIndex !== -1) {
+        mockExercises[exerciseIndex] = {
+          ...mockExercises[exerciseIndex],
+          order: index + 1,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+    });
+    
+    return { success: true };
   }
 }
+
+export const apiService = new MockApiClient();

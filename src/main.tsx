@@ -7,8 +7,9 @@ import Dashboard from "./Dashboard";
 import UnitManagement from "./UnitManagement";
 import LessonManagement from "./LessonManagement";
 import CreateExercise from "./CreateExercise";
+import SubUnitManagement from "./SubUnitManagement";
 import Layout from "./Layout";
-//import PlaceholderPage from "./PlaceholderPage"; // Add this import
+//import PlaceholderPage from "./PlaceholderPage"; // Add this import when needed(for stuff like settings, help page)
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
     element: <Layout><UnitManagement /></Layout>,
   },
   {
+    path: "/subunit", // NEW ROUTE
+    element: <Layout><SubUnitManagement /></Layout>,
+  },
+  {
     path: "/lessons", 
     element: <Layout><LessonManagement /></Layout>,
   },
@@ -28,7 +33,7 @@ const router = createBrowserRouter([
     element: <CreateExercise />,
   }
 	//   },
-//   // Add these temporary routes:
+//   // 
 //   {
 //     path: "/settings",
 //     element: <Layout><PlaceholderPage title="Settings" /></Layout>,

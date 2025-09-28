@@ -12,11 +12,13 @@ export interface Unit extends BaseEntity {
   description?: string;
   thumbnailUrl?: string;
   isPublished: boolean;
+  subUnits: SubUnit[];
 }
 
 export interface SubUnit extends BaseEntity {
   unitId: string;
   estimatedTotalTime: number;
+  theme: string;
 }
 
 export interface Lesson extends BaseEntity {
@@ -77,3 +79,20 @@ export interface ApiClient {
   deleteExercise(id: string): Promise<ApiResponse<void>>;
   reorderExercises(lessonId: string, exerciseIds: string[]): Promise<ApiResponse<void>>;
 }
+
+
+
+// Adapter (when needed)
+// export const exerciseAdapter = {
+//   fromBackend: (backendData: any): Exercise => ({
+//     id: backendData._id || backendData.id,
+//     title: backendData.exerciseTitle || backendData.title,
+//     // ... field mappings
+//   }),
+  
+//   toBackend: (frontendData: Exercise): any => ({
+//     _id: frontendData.id,
+//     exerciseTitle: frontendData.title,
+//     // ... reverse mappings
+//   })
+// };
