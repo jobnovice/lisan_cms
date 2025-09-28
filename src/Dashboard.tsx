@@ -1,6 +1,6 @@
 // dashboard.tsx
 import React, { useState, useEffect } from "react";
-import { Bell, Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { apiService } from './api';
 import type { ApiResponse, Unit, SubUnit, Lesson, Exercise } from './api';
@@ -215,9 +215,9 @@ const Dashboard: React.FC = () => {
         fetchDashboardData(true);
     };
 
-    const handleNotificationClick = () => {
-        console.log("Open notifications");
-    };
+    // const handleNotificationClick = () => {
+    //     console.log("Open notifications");
+    // };
 
     const formatTimeAgo = (timestamp: string) => {
         const now = new Date();
@@ -286,13 +286,13 @@ const Dashboard: React.FC = () => {
                                     <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
                                     Refresh
                                 </button>
-                                <button
+                                {/* <button
                                     onClick={handleNotificationClick}
                                     className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
                                     aria-label="Notifications"
                                 >
                                     <Bell size={20} className="text-gray-600" />
-                                </button>
+                                </button> */}
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
                                     <span className="text-white font-medium text-sm">
                                         A
