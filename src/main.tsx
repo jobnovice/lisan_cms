@@ -32,16 +32,7 @@ const router = createBrowserRouter([
     path: "/create-exercise",
     element: <CreateExercise />,
   }
-	//   },
-//   // 
-//   {
-//     path: "/settings",
-//     element: <Layout><PlaceholderPage title="Settings" /></Layout>,
-//   },
-//   {
-//     path: "/help",
-//     element: <Layout><PlaceholderPage title="Help" /></Layout>,
-//   },
+
 ]);
 
 createRoot(document.getElementById("root")!).render(

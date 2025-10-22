@@ -266,6 +266,7 @@ const getAvailableOrders = (existingOrders: number[]): number[] => {
 };
 
 // Unit Card Component
+// UnitCard Component - Update the button sections
 const UnitCard: React.FC<UnitCardProps> = ({
 	unit,
 	onEditUnit,
@@ -299,20 +300,35 @@ const UnitCard: React.FC<UnitCardProps> = ({
 				</div>
 			</div>
 			<div className="flex items-center gap-2">
-				<button
-					onClick={() => onEditUnit(unit)}
-					className="text-gray-500 hover:text-gray-700 p-1.5 rounded-md transition-colors"
-					aria-label="Edit unit"
-				>
-					<Edit size={16} />
-				</button>
-				<button
-					onClick={() => onAddSubUnit(unit.id)}
-					className="text-gray-500 hover:text-gray-700 p-1.5 rounded-md transition-colors"
-					aria-label="Add sub-unit"
-				>
-					<Plus size={16} />
-				</button>
+				{/* Edit Unit Button with Tooltip */}
+				<div className="relative group">
+					<button
+						onClick={() => onEditUnit(unit)}
+						className="text-gray-500 hover:text-gray-700 p-1.5 rounded-md transition-colors"
+						aria-label="Edit unit"
+					>
+						<Edit size={16} />
+					</button>
+					<div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
+						Edit Unit
+						<div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+					</div>
+				</div>
+				
+				{/* Add Sub-unit Button with Tooltip */}
+				<div className="relative group">
+					<button
+						onClick={() => onAddSubUnit(unit.id)}
+						className="text-gray-500 hover:text-gray-700 p-1.5 rounded-md transition-colors"
+						aria-label="Add sub-unit"
+					>
+						<Plus size={16} />
+					</button>
+					<div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
+						Add Sub-unit
+						<div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -336,22 +352,35 @@ const UnitCard: React.FC<UnitCardProps> = ({
 						</p>
 					</div>
 					
-					<button
-						onClick={() => onViewLessons(unit.id, subUnit.id, subUnit.title)}
-						className="text-blue-500 hover:text-blue-700 p-1.5 rounded-md transition-colors"
-						aria-label="Manage lessons"
-						title="Manage Lessons"
-					>
-						<BookOpen size={16} />
-					</button>
+					{/* View Lessons Button with Tooltip */}
+					<div className="relative group">
+						<button
+							onClick={() => onViewLessons(unit.id, subUnit.id, subUnit.title)}
+							className="text-blue-500 hover:text-blue-700 p-1.5 rounded-md transition-colors"
+							aria-label="Manage lessons"
+						>
+							<BookOpen size={16} />
+						</button>
+						<div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
+							View Lessons
+							<div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+						</div>
+					</div>
 					
-					<button
-						onClick={() => onEditSubUnit(unit.id, subUnit)}
-						className="text-gray-500 hover:text-gray-700 p-1.5 rounded-md transition-colors"
-						aria-label="Edit sub-unit"
-					>
-						<Edit size={16} />
-					</button>
+					{/* Edit Sub-unit Button with Tooltip */}
+					<div className="relative group">
+						<button
+							onClick={() => onEditSubUnit(unit.id, subUnit)}
+							className="text-gray-500 hover:text-gray-700 p-1.5 rounded-md transition-colors"
+							aria-label="Edit sub-unit"
+						>
+							<Edit size={16} />
+						</button>
+						<div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
+							Edit Sub-unit
+							<div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+						</div>
+					</div>
 				</div>
 			))}
 			
